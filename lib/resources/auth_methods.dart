@@ -4,7 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:instagram_flutter/resources/storage_methods.dart';
 
-class AtuhMethods {
+class AuthMethods {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   //sign up user
@@ -50,6 +50,32 @@ class AtuhMethods {
         // });
 
         res = 'success';
+      }
+    } on FirebaseAuthException catch (err) {
+      res = err.message.toString();
+
+      if (err.code == 'wek-password') res = 'The password is invalid';
+      if (err.code == 'invalid-username') res = 'The username is invalid';
+      if (err.code == 'invalid-email') res = 'The email address is invalid';
+      if (err.code == 'invalid-bio') res = 'The bio is invalid';
+    } catch (err) {
+      res = err.toString();
+    }
+    return res;
+  }
+
+  //loggin in user
+  Future<String> loginUser(
+      {required String email, required String password}) async {
+    String res = 'Some error occurred';
+
+    try {
+      if (email.isNotEmpty || password.isNotEmpty) {
+        await _auth.signInWithEmailAndPassword(
+            email: email, password: password);
+        res = 'success';
+      } else {
+        res = "Please enter your email and password";
       }
     } catch (err) {
       res = err.toString();
