@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:instagram_flutter/resources/auth_methods.dart';
+import 'package:instagram_flutter/screens/login_screen.dart';
 import 'package:instagram_flutter/utils/colors.dart';
 import 'package:instagram_flutter/utils/utils.dart';
 import 'package:instagram_flutter/widgets/text_field_input.dart';
@@ -20,6 +21,8 @@ class _SignupScreenState extends State<SignupScreen> {
   final TextEditingController _bioController = TextEditingController();
   final TextEditingController _usernameController = TextEditingController();
   Uint8List? _image;
+  bool _isLoading = false;
+
   @override
   void dispose() {
     super.dispose();
@@ -34,6 +37,35 @@ class _SignupScreenState extends State<SignupScreen> {
     setState(() {
       _image = im;
     });
+  }
+
+  void changeToLogIn() {
+    Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: ((context) => const LoginScreen())));
+  }
+
+  void signUpUser() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    String res = await AuthMethods().signUpUser(
+      email: _emailController.text,
+      password: _passwordController.text,
+      username: _usernameController.text,
+      bio: _bioController.text,
+      file: _image!,
+    );
+
+    setState(() {
+      _isLoading = false;
+    });
+
+    if (res == 'success') {
+      changeToLogIn();
+    } else {
+      showSnackBar(context, res);
+    }
   }
 
   @override
@@ -110,30 +142,26 @@ class _SignupScreenState extends State<SignupScreen> {
               const SizedBox(height: 25),
               //button login
               InkWell(
-                onTap: () async {
-                  String res = await AtuhMethods().signUpUser(
-                    email: _emailController.text,
-                    password: _passwordController.text,
-                    username: _usernameController.text,
-                    bio: _bioController.text,
-                    file: _image!,
-                  );
-                  print(res);
-                },
+                onTap: signUpUser,
                 child: Container(
-                  width: double.infinity,
-                  alignment: Alignment.center,
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  decoration: const ShapeDecoration(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(
-                        Radius.circular(4),
+                    width: double.infinity,
+                    alignment: Alignment.center,
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    decoration: const ShapeDecoration(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(4),
+                        ),
                       ),
+                      color: blueColor,
                     ),
-                    color: blueColor,
-                  ),
-                  child: const Text('Log in'),
-                ),
+                    child: _isLoading
+                        ? const Center(
+                            child: CircularProgressIndicator(
+                              color: primaryColor,
+                            ),
+                          )
+                        : const Text('Sign Up')),
               ),
               const SizedBox(height: 25),
               Flexible(child: Container(), flex: 2),
@@ -150,7 +178,7 @@ class _SignupScreenState extends State<SignupScreen> {
                     ),
                   ),
                   GestureDetector(
-                    onTap: () {},
+                    onTap: changeToLogIn,
                     child: Container(
                       padding: const EdgeInsets.symmetric(
                         vertical: 8,
@@ -165,6 +193,7 @@ class _SignupScreenState extends State<SignupScreen> {
                   )
                 ],
               ),
+              const SizedBox(height: 10),
             ],
           ),
         ),
