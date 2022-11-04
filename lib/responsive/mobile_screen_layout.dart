@@ -15,79 +15,93 @@ class MobileScreenLayout extends StatefulWidget {
 }
 
 class _MobileScreenLayoutState extends State<MobileScreenLayout> {
-  String username = "";
+  int _page = 0;
+  late PageController pageController;
 
   @override
   void initState() {
     super.initState();
-    getUsername();
+    pageController = PageController();
   }
 
-  void getUsername() async {
-    DocumentSnapshot snap = await FirebaseFirestore.instance
-        .collection('users')
-        .doc(FirebaseAuth.instance.currentUser!.uid)
-        .get();
+  @override
+  void dispose() {
+    super.dispose();
+    pageController.dispose();
+  }
 
+  void navigationTapped(int page) {
+    pageController.jumpToPage(page);
+  }
+
+  void onPageChanged(int page) {
     setState(() {
-      username = (snap.data() as Map<String, dynamic>)['username'];
+      _page = page;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    /*  model.User user = Provider.of<UserProvider>(context).getUser; */
-    int _page = 0;
+    model.User user = Provider.of<UserProvider>(context).getUser;
 
     return Scaffold(
-      body: Center(
+      body: PageView(
         // ignore: unnecessary_string_interpolations
-        child: Text(user.email),
+        children: [
+          Text("Feed"),
+          Text("Search"),
+          Text("Add post"),
+          Text("Notifications"),
+          Text("Profile"),
+        ],
+        controller: pageController,
+        onPageChanged: onPageChanged,
       ),
       bottomNavigationBar: CupertinoTabBar(
         backgroundColor: mobileBackgroundColor,
         items: [
           BottomNavigationBarItem(
             icon: Icon(
-              Icons.search,
-              color: _page == 0 ? primaryColor : secondaryColor,
+              Icons.home,
+              color: _page == 0 ? Colors.blue : secondaryColor,
             ),
             label: '',
-            backgroundColor: primaryColor,
+            backgroundColor: Colors.blue,
           ),
           BottomNavigationBarItem(
             icon: Icon(
-              Icons.home,
-              color: _page == 1 ? primaryColor : secondaryColor,
+              Icons.search,
+              color: _page == 1 ? Colors.blue : secondaryColor,
             ),
             label: '',
-            backgroundColor: primaryColor,
+            backgroundColor: Colors.blue,
           ),
           BottomNavigationBarItem(
             icon: Icon(
               Icons.add_circle,
-              color: _page == 2 ? primaryColor : secondaryColor,
+              color: _page == 2 ? Colors.blue : secondaryColor,
             ),
             label: '',
-            backgroundColor: primaryColor,
+            backgroundColor: Colors.blue,
           ),
           BottomNavigationBarItem(
             icon: Icon(
               Icons.favorite,
-              color: _page == 3 ? primaryColor : secondaryColor,
+              color: _page == 3 ? Colors.blue : secondaryColor,
             ),
             label: '',
-            backgroundColor: primaryColor,
+            backgroundColor: Colors.blue,
           ),
           BottomNavigationBarItem(
             icon: Icon(
               Icons.person,
-              color: _page == 4 ? primaryColor : secondaryColor,
+              color: _page == 4 ? Colors.blue : secondaryColor,
             ),
             label: '',
-            backgroundColor: primaryColor,
+            backgroundColor: Colors.blue,
           ),
         ],
+        onTap: navigationTapped,
       ),
     );
   }
