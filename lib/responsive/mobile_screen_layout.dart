@@ -44,6 +44,9 @@ class _MobileScreenLayoutState extends State<MobileScreenLayout> {
   Widget build(BuildContext context) {
     model.User user = Provider.of<UserProvider>(context).getUser;
 
+    int _page = 0;
+
+
     return Scaffold(
       body: PageView(
         // ignore: unnecessary_string_interpolations
