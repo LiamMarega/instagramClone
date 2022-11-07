@@ -79,7 +79,7 @@ class _SignupScreenState extends State<SignupScreen> {
         _isLoading = false;
       });
       // show the error
-      showSnackBar(context, res);
+      showSnackBar(res, context);
     }
   }
 
