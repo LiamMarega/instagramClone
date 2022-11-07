@@ -30,7 +30,7 @@ class FirestoreMethods {
         datePublished: DateTime.now(),
         postUrl: photoUrl,
         profileImage: profImage,
-        likes: 0,
+        likes: [],
       );
 
       _firestore.collection("posts").doc(postId).set(
