@@ -1,10 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:instagram_flutter/models/user.dart';
+import 'package:instagram_flutter/providers/user_provider.dart';
 import 'package:instagram_flutter/utils/colors.dart';
+import 'package:instagram_flutter/widgets/like_animation.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
-class PostCard extends StatelessWidget {
+class PostCard extends StatefulWidget {
   final snap;
   const PostCard({super.key, required this.snap});
+
+  @override
+  State<PostCard> createState() => _PostCardState();
+}
+
+class _PostCardState extends State<PostCard> {
+  bool isLikeAnimating = false;
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +30,7 @@ class PostCard extends StatelessWidget {
           imageSection(context),
 
           //LIKE COMMENT SECTION
-          likeAndComment(),
+          likeAndComment(context),
 
           // DESCRIPTION AND NUMBER OF COMMENTS
           descriptionAndLikes()
@@ -36,14 +47,14 @@ class PostCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            '${snap['likes'].length} likes',
+            '${widget.snap['likes'].length} likes',
             style: const TextStyle(fontWeight: FontWeight.bold),
           ),
           const SizedBox(
             height: 4,
           ),
           Text(
-            '${snap['username']} ${snap['description']}',
+            '${widget.snap['username']} ${widget.snap['description']}',
             style: TextStyle(fontWeight: FontWeight.bold),
           ),
           const SizedBox(
@@ -57,7 +68,7 @@ class PostCard extends StatelessWidget {
             height: 4,
           ),
           Text(
-            DateFormat.yMMMd().format(snap['datePublished'].toDate()),
+            DateFormat.yMMMd().format(widget.snap['datePublished'].toDate()),
             style: const TextStyle(color: Colors.grey),
           ),
         ],
@@ -65,12 +76,16 @@ class PostCard extends StatelessWidget {
     );
   }
 
-  Row likeAndComment() {
+  Row likeAndComment(context) {
+    final User user = Provider.of<UserProvider>(context).getUser;
     return Row(
       children: [
-        IconButton(
-          onPressed: () {},
-          icon: const Icon(Icons.favorite_border),
+        LikeAnimation(
+          isAnimating: widget.snap['likes'].contains(user.uid),
+          child: IconButton(
+            onPressed: () {},
+            icon: const Icon(Icons.favorite_border),
+          ),
         ),
         IconButton(
           onPressed: () {},
@@ -89,13 +104,39 @@ class PostCard extends StatelessWidget {
     );
   }
 
-  SizedBox imageSection(BuildContext context) {
-    return SizedBox(
-      height: MediaQuery.of(context).size.height * 0.35,
-      width: double.infinity,
-      child: Image.network(
-        snap['postUrl'],
-        fit: BoxFit.cover,
+  GestureDetector imageSection(BuildContext context) {
+    return GestureDetector(
+      onDoubleTap: () => setState(() {
+        isLikeAnimating = true;
+      }),
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          SizedBox(
+            height: MediaQuery.of(context).size.height * 0.35,
+            width: double.infinity,
+            child: Image.network(
+              widget.snap['postUrl'],
+              fit: BoxFit.cover,
+            ),
+          ),
+          AnimatedOpacity(
+            duration: const Duration(milliseconds: 150),
+            opacity: isLikeAnimating ? 1 : 0,
+            child: LikeAnimation(
+              child: Icon(Icons.favorite, color: Colors.white, size: 100),
+              isAnimating: isLikeAnimating,
+              duration: const Duration(
+                milliseconds: 500,
+              ),
+              onEnd: () {
+                setState(() {
+                  isLikeAnimating = false;
+                });
+              },
+            ),
+          )
+        ],
       ),
     );
   }
@@ -121,7 +162,7 @@ class PostCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    snap['username'],
+                    widget.snap['username'],
                     style: TextStyle(fontWeight: FontWeight.bold),
                   )
                 ],
