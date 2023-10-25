@@ -1,3 +1,5 @@
+// ignore_for_file: no_leading_underscores_for_local_identifiers
+
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -9,7 +11,6 @@ pickImage(ImageSource source) async {
   if (_file != null) {
     return await _file.readAsBytes();
   }
-  print('No image selected');
 }
 
 // for displaying snackbars

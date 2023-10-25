@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_typing_uninitialized_variables
+
 import 'package:flutter/material.dart';
 import 'package:instagram_flutter/models/user.dart';
 import 'package:instagram_flutter/providers/user_provider.dart';
@@ -55,12 +57,12 @@ class _PostCardState extends State<PostCard> {
           ),
           Text(
             '${widget.snap['username']} ${widget.snap['description']}',
-            style: TextStyle(fontWeight: FontWeight.bold),
+            style: const TextStyle(fontWeight: FontWeight.bold),
           ),
           const SizedBox(
             height: 4,
           ),
-          Text(
+          const Text(
             'View all 100 comments',
             style: TextStyle(color: Colors.grey),
           ),
@@ -124,7 +126,6 @@ class _PostCardState extends State<PostCard> {
             duration: const Duration(milliseconds: 150),
             opacity: isLikeAnimating ? 1 : 0,
             child: LikeAnimation(
-              child: Icon(Icons.favorite, color: Colors.white, size: 100),
               isAnimating: isLikeAnimating,
               duration: const Duration(
                 milliseconds: 500,
@@ -134,6 +135,7 @@ class _PostCardState extends State<PostCard> {
                   isLikeAnimating = false;
                 });
               },
+              child: const Icon(Icons.favorite, color: Colors.white, size: 100),
             ),
           )
         ],
@@ -163,7 +165,7 @@ class _PostCardState extends State<PostCard> {
                 children: [
                   Text(
                     widget.snap['username'],
-                    style: TextStyle(fontWeight: FontWeight.bold),
+                    style: const TextStyle(fontWeight: FontWeight.bold),
                   )
                 ],
               ),
